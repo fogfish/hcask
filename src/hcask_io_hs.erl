@@ -325,8 +325,7 @@ encode({delete, Key}, Cask) ->
       ])
    );
 
-encode({lookup, {key, Eq, Key}, Filters, {Ofs, Len}}, Cask)
- when is_list(Key) ->
+encode({lookup, {key, Eq, Key}, Filters, {Ofs, Len}}, Cask) ->
    list_to_binary(
       join($\t, [
          scalar:s(Cask#hcask.uid),
@@ -337,9 +336,7 @@ encode({lookup, {key, Eq, Key}, Filters, {Ofs, Len}}, Cask)
          integer_to_list(Ofs),
          join($\t, lookup_filter(Filters, Cask))
       ])
-   );
-encode({lookup, {key, Eq, Key}, Filters, N}, Cask) ->
-	encode({lookup, {key, Eq, [Key]}, Filters, N}, Cask).
+   ).
 
 
 lookup_filter(Filters, Cask) ->

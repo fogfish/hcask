@@ -17,13 +17,41 @@ SET storage_engine=InnoDB;
 
 --
 --
-CREATE DATABASE IF NOT EXISTS test;
+DROP   DATABASE hcask;
+CREATE DATABASE hcask;
 
 --
 --
-CREATE TABLE test.keyval(
-   `key`  BINARY(4),
-   `val`  VARBINARY(1024),
+CREATE TABLE IF NOT EXISTS hcask.kv(
+   `key` INT NOT NULL,
+   `val` VARCHAR(1024),
    PRIMARY KEY(`key`)
 ) ROW_FORMAT=DYNAMIC;
+
+--
+--
+CREATE TABLE IF NOT EXISTS hcask.mkv(
+      `a`  INT NOT NULL,
+      `b`  INT NOT NULL,
+      `c`  INT NOT NULL,  
+      `val` VARCHAR(1024),
+      PRIMARY KEY(`a`, `b`, `c`)
+) ROW_FORMAT=DYNAMIC;
+
+--
+--
+CREATE TABLE IF NOT EXISTS hcask.kv0(
+   `key` INT NOT NULL,
+   `val` VARCHAR(1024),
+   PRIMARY KEY(`key`)
+) ROW_FORMAT=DYNAMIC;
+
+--
+--
+CREATE TABLE IF NOT EXISTS hcask.kv1(
+   `key` INT NOT NULL,
+   `val` VARCHAR(1024),
+   PRIMARY KEY(`key`)
+) ROW_FORMAT=DYNAMIC;
+
 

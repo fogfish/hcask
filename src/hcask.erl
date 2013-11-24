@@ -165,12 +165,11 @@ uid(Cask) ->
 	Cask.
 
 %%
-%%
+%% create entity to cask
+-spec(create/2 :: (#hcask{}, tuple()) -> {ok, integer()} | {error, any()}).
+
 create(Cask, Entity) ->
 	case hcask_io:do({create, Entity}, hcask_io:init(?CONFIG_IO_FAMILY, Cask)) of
-		{ok, 0, IO} ->
-			ok = hcask_io:free(IO),
-			{ok, 1};		
 		{ok, Msg, IO} ->
 			ok = hcask_io:free(IO),
 			{ok, Msg};
@@ -180,7 +179,9 @@ create(Cask, Entity) ->
 	end.
 
 %%
-%%
+%% update entity in cask
+-spec(update/2 :: (#hcask{}, tuple()) -> {ok, integer()} | {error, any()}).
+
 update(Cask, Entity) ->
 	case hcask_io:do({update, Entity}, hcask_io:init(?CONFIG_IO_FAMILY, Cask)) of
 		{ok, Msg, IO} ->
@@ -192,7 +193,9 @@ update(Cask, Entity) ->
 	end.
 
 %%
-%%
+%% delete entity from cask
+-spec(delete/2 :: (#hcask{}, any()) -> {ok, integer()} | {error, any()}).
+
 delete(Cask, Key) ->
 	case hcask_io:do({delete, Key}, hcask_io:init(?CONFIG_IO_FAMILY, Cask)) of
 		{ok, Msg, IO} ->
@@ -204,8 +207,10 @@ delete(Cask, Key) ->
 	end.
 
 %%
-%%
-lookup(Cask, {lookup, Key, Filters, N}=Req) ->
+%% lookup entity in cask
+-spec(lookup/2 :: (#hcask{}, any()) -> {ok, [tuple()]} | {error, any()}).
+
+lookup(Cask, {lookup, _Key, _Filters, _N}=Req) ->
 	case hcask_io:do(Req, hcask_io:init(?CONFIG_IO_FAMILY, Cask)) of
 		{ok, Msg, IO} ->
 			ok = hcask_io:free(IO),
@@ -224,6 +229,9 @@ q(Key) ->
 q(Key, N)
  when is_integer(N) ->
    q(Key, [], {0, N});
+q(Key, {M, N})
+ when is_integer(N) ->
+   q(Key, [], {M, N});
 q(Key, Filters)
  when is_list(Filters) ->
    q(Key, Filters, {0, 25}).
@@ -237,10 +245,10 @@ q(Key, Filters, {M, N})
 %%
 %% find query utility functions 
 eq(Key, Val)  -> constrain(<<$=>>, Key, Val).
-gt(Key, Val)  -> constrain(gt, Key, Val).   
-lt(Key, Val)  -> constrain(lt, Key, Val).   
-ge(Key, Val)  -> constrain(ge, Key, Val).   
-le(Key, Val)  -> constrain(le, Key, Val).   
+gt(Key, Val)  -> constrain(<<$>>>, Key, Val).   
+lt(Key, Val)  -> constrain(<<$<>>, Key, Val).   
+ge(Key, Val)  -> constrain(<<$>, $=>>, Key, Val).   
+le(Key, Val)  -> constrain(<<$<, $=>>, Key, Val).   
 
 constrain(Op, Key, Val) ->
    {Key, Op, Val}.

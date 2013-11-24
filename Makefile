@@ -29,6 +29,10 @@ ARCH = $(shell uname -m)
 PLAT = $(shell uname -s)
 TAG  = ${ARCH}.${PLAT}
 
+DB_USER=admin
+DB_PASS=admin
+DB_HOST=mysqld
+
 ## application release
 ifeq ($(wildcard rel/reltool.config),) 
 	REL =
@@ -79,6 +83,9 @@ test: all
 
 docs:
 	@./rebar skip_deps=true doc
+
+db:
+	@mysql -u${DB_USER} -p${DB_PASS} -h${DB_HOST} -e "source ./priv/hcask.sql"
 
 ##
 ## release

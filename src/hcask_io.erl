@@ -88,12 +88,12 @@ prepare_request({delete, Entity}, #hio{protocol=Protocol, cask=[Cask|_]}=I0) ->
    {Socket, IO} = lease_socket(writer, I0),
 	do_request(Protocol:encode({delete, Key}, TxCask), Socket, TxCask, IO);
 
-prepare_request({lookup, {key, _Cmp, Entity}, _Filters, _N}=Req, #hio{protocol=Protocol, cask=[Cask|_]}=I0) ->
+prepare_request({lookup, {key, KOp, Entity}, Filters, N}, #hio{protocol=Protocol, cask=[Cask|_]}=I0) ->
    Bucket       = resolve_phy_bucket(Entity, Cask),
    TxCask       = hcask:uid(Cask#hcask{bucket=Bucket}),
    Key          = key_entity(Entity, TxCask),
    {Socket, IO} = lease_socket(reader, I0),
-	do_request(Protocol:encode(Req, TxCask), Socket, TxCask, IO).
+	do_request(Protocol:encode({lookup, {key, KOp, Key}, Filters, N}, TxCask), Socket, TxCask, IO).
 
 
 do_request(Req, Socket, Cask, #hio{protocol=Protocol}=IO) ->
@@ -168,9 +168,18 @@ split_entity(Entity, #hcask{}=Cask) ->
 
 %%
 %% normalize key
-key_entity(Entity, #hcask{entity=undefined}) ->
+key_entity(Entity, #hcask{entity=undefined})
+ when is_list(Entity) ->
    Entity;
-
+key_entity(Entity, #hcask{entity=undefined})
+ when is_tuple(Entity) ->
+   tuple_to_list(Entity);   
+key_entity(Entity, #hcask{entity=undefined}) ->
+	[Entity];
 key_entity(Entity, Cask) ->
    Fun = Cask#hcask.entity,
-   Fun(Entity).
+   case Fun(Entity) of
+   	X when is_list(X)  -> X;
+   	X when is_tuple(X) -> tuple_to_list(X);
+   	X  -> [X]
+   end.
