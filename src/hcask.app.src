@@ -1,0 +1,21 @@
+{application, hcask,
+   [
+      {description, "hcask - simple storage interface"},
+      {vsn,         "0.0.0"},
+      {modules,     [
+         hcask,
+         hcask_sup,
+         hcask_app
+      ]},
+      {registered,  []},
+      {applications,[
+         kernel,
+         stdlib,
+         lager,
+         pq
+      ]},
+      {mod, {hcask_app, []}},
+      {env, []}
+   ]
+}.  
+
