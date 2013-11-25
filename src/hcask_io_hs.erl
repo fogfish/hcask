@@ -360,7 +360,7 @@ lookup_filter(Filters, Cask) ->
 decode(Msg, Cask)
  when is_binary(Msg) ->
  	% handle raw packet, first items is tuple size
-   [N | List] = binary:split(unescape(Msg), [<<"\t">>], [global]),
+   [N | List] = binary:split(Msg, [<<"\t">>], [global]),
    decode_tuples(Cask#hcask.struct, scalar:i(N), List);
 decode(Msg, _Cask) ->
 	Msg.
@@ -369,7 +369,7 @@ decode_tuples(_Struct, _N, []) ->
 	[];
 decode_tuples(Struct, N, List) ->
    {H, T} = lists:split(N, List),
-   Value  = lists:map(fun scalar:decode/1, H),
+   Value  = lists:map(fun(X) -> scalar:decode(unescape(X)) end, H),
    [list_to_tuple([Struct | Value]) | decode_tuples(Struct, N,  T)].
 
 %%%------------------------------------------------------------------

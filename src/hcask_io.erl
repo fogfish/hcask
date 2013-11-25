@@ -68,29 +68,29 @@ do(Req, #hio{}=IO) ->
 	prepare_request(Req, IO).
 
 prepare_request({create, Entity}, #hio{protocol=Protocol, cask=[Cask|_]}=I0) ->
-   Bucket       = resolve_phy_bucket(Entity, Cask),
-   TxCask       = hcask:uid(Cask#hcask{bucket=Bucket}),
+   {Db, Bucket, Index} = resolve_phy_bucket(Entity, Cask),
+   TxCask       = hcask:uid(Cask#hcask{db=Db, bucket=Bucket, index=Index}),
    {Key, Val}   = split_entity(Entity, TxCask),
    {Socket, IO} = lease_socket(writer, I0),
 	do_request(Protocol:encode({create, Key, Val}, TxCask), Socket, TxCask, IO);
 
 prepare_request({update, Entity}, #hio{protocol=Protocol, cask=[Cask|_]}=I0) ->
-   Bucket       = resolve_phy_bucket(Entity, Cask),
-   TxCask       = hcask:uid(Cask#hcask{bucket=Bucket}),
+   {Db, Bucket, Index} = resolve_phy_bucket(Entity, Cask),
+   TxCask       = hcask:uid(Cask#hcask{db=Db, bucket=Bucket, index=Index}),
    {Key, Val}   = split_entity(Entity, TxCask),
    {Socket, IO} = lease_socket(writer, I0),
 	do_request(Protocol:encode({update, Key, Val}, TxCask), Socket, TxCask, IO);
 
 prepare_request({delete, Entity}, #hio{protocol=Protocol, cask=[Cask|_]}=I0) ->
-   Bucket       = resolve_phy_bucket(Entity, Cask),
-   TxCask       = hcask:uid(Cask#hcask{bucket=Bucket}),
+   {Db, Bucket, Index} = resolve_phy_bucket(Entity, Cask),
+   TxCask       = hcask:uid(Cask#hcask{db=Db, bucket=Bucket, index=Index}),
    Key          = key_entity(Entity, TxCask),
    {Socket, IO} = lease_socket(writer, I0),
 	do_request(Protocol:encode({delete, Key}, TxCask), Socket, TxCask, IO);
 
 prepare_request({lookup, {key, KOp, Entity}, Filters, N}, #hio{protocol=Protocol, cask=[Cask|_]}=I0) ->
-   Bucket       = resolve_phy_bucket(Entity, Cask),
-   TxCask       = hcask:uid(Cask#hcask{bucket=Bucket}),
+   {Db, Bucket, Index} = resolve_phy_bucket(Entity, Cask),
+   TxCask       = hcask:uid(Cask#hcask{db=Db, bucket=Bucket, index=Index}),
    Key          = key_entity(Entity, TxCask),
    {Socket, IO} = lease_socket(reader, I0),
 	do_request(Protocol:encode({lookup, {key, KOp, Key}, Filters, N}, TxCask), Socket, TxCask, IO).
@@ -145,12 +145,10 @@ lease_socket(writer, #hio{}=IO) ->
 
 %%
 %% resolve physical bucket
-resolve_phy_bucket(Entity,  #hcask{bucket=undefined}=Cask) ->
-   Fun = Cask#hcask.identity,
-   Fun(Entity);
-resolve_phy_bucket(_Entity, #hcask{}=Cask) ->
-   Cask#hcask.bucket.
-
+resolve_phy_bucket(Entity,  #hcask{identity=undefined}=Cask) ->
+   {Cask#hcask.db, Cask#hcask.bucket, Cask#hcask.index};
+resolve_phy_bucket(Entity,  #hcask{identity=Fun}=Cask) ->
+   Fun(Entity).
 
 %%
 %% split entity to key / value pair and normalize them

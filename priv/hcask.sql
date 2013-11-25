@@ -54,4 +54,26 @@ CREATE TABLE IF NOT EXISTS hcask.kv1(
    PRIMARY KEY(`key`)
 ) ROW_FORMAT=DYNAMIC;
 
+--
+-- test type serialization
+CREATE TABLE IF NOT EXISTS hcask.types(
+   uid        int NOT NULL,
+   `bit`      bit(8),
+   `bool`     boolean,
+   u8         tinyint unsigned,
+   u16        smallint unsigned,
+   u24        mediumint unsigned,
+   u32        int unsigned,
+   u64        bigint unsigned,
+   flt        float,
+   dbl        double,
+   chr        char(30),
+   vchr      varchar(30),
+   bin        binary(22),
+   vbin       varbinary(30),   
+   blb        blob,
+
+   PRIMARY KEY(uid)
+) ROW_FORMAT=DYNAMIC
+
 

@@ -123,7 +123,7 @@ new([{bucket, X} | Opts], S) ->
    new(Opts, S#hcask{bucket=X});
 new([{index, X} | Opts], S) ->
    new(Opts, S#hcask{index=X});
-new([{indentity, X} | Opts], S) ->
+new([{identity, X} | Opts], S) ->
    new(Opts, S#hcask{identity=X});
 new([{entity, X} | Opts], S) ->
    new(Opts, S#hcask{entity=X});
