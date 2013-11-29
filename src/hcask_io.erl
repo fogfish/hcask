@@ -19,6 +19,7 @@
 -module(hcask_io). 
 
 -include("hcask.hrl").
+-include("include/hcask.hrl").
 
 -export([
 	init/2,

@@ -18,6 +18,7 @@
 -module(hcask).
 
 -include("hcask.hrl").
+-include("include/hcask.hrl").
 
 -export([start/0, start/1]).
 -export([

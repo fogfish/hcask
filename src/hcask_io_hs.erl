@@ -20,6 +20,7 @@
 -behaviour(pipe).
 
 -include("hcask.hrl").
+-include("include/hcask.hrl").
 
 -export([
 	start_link/3,
