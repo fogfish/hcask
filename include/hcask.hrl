@@ -2,6 +2,7 @@
 %%
 %% cask definition
 -record(hcask, {
+	name     = undefined  :: any(),     % cask name
 	uid      = undefined  :: integer(), % cask unique identity
 	% data type
 	struct   = undefined  :: atom(),    % struct identity
