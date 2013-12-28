@@ -1,0 +1,2 @@
+# hcask - simple storage interface
+

@@ -42,8 +42,6 @@
   ,lt/2
   ,ge/2
   ,le/2
-  
-  ,t/0
 ]).
 
 
@@ -185,12 +183,12 @@ create(Cask, Entity) ->
 
 update(Cask, Entity) ->
 	case hcask_io:do({update, Entity}, hcask_io:init(?CONFIG_IO_FAMILY, Cask)) of
-		{ok, Msg, IO} ->
-			ok = hcask_io:free(IO),
-			{ok, Msg};
-		{error, Reason, IO} ->
-			ok = hcask_io:free(IO),
-			{error, Reason}
+      {ok, Msg, IO} ->
+         ok = hcask_io:free(IO),
+         {ok, Msg};
+      {error, Reason, IO} ->
+         ok = hcask_io:free(IO),
+         {error, Reason}
 	end.
 
 %%
@@ -254,19 +252,4 @@ le(Key, Val)  -> constrain(<<$<, $=>>, Key, Val).
 constrain(Op, Key, Val) ->
    {Key, Op, Val}.
 
-
-
-
-
-t() ->
-   _    = hcask:join(my, [{host, mysqld}, {reader, 9998}, {writer, 9999}, {pool, 10}]),
-   Cask = hcask:new([
-      {peer,       my}
-     ,{struct,   keyval}
-     ,{property, [key,val]}
-     ,{db,       test}
-   ]),
-   lager:set_loglevel(lager_console_backend, debug),
-   hcask:lookup(Cask, 1).
-   %hcask:create(Cask, {keyval, 1, "this is test ++"}).
 
